@@ -2,4 +2,4 @@
 
 mkdir build
 
-cl /Fe:"build/main.exe" /Fo:"build/main.obj" /EHsc main.cpp
+cl /Fe:"build/mario.exe" /Fo:"build/mario.obj" /EHsc main.cpp
