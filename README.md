@@ -24,6 +24,11 @@ You can pack the video file and the main script together using `iexpress`, with 
 iexpress /Q /N iexpress.sed
 ```
 
+or, if you have a 64-bit system and want to package it into a 32-bit executable:
+```sh
+%SYSTEMROOT%\SysWOW64\iexpress.exe /Q /N iexpress.sed
+```
+
 ## The video
 The original video comes from [Mario Teaches Typing 2](https://www.mariowiki.com/Mario_Teaches_Typing_2), the exact source is from ["Mario Head Collection"](https://www.youtube.com/watch?v=9tQWLg4E90M&t=30s) on Youtube.
 
