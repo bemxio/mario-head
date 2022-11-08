@@ -35,3 +35,5 @@ The original video comes from [Mario Teaches Typing 2](https://www.mariowiki.com
 If you want to replace the video, feel free to swap out `mario.wmv` with an another video.
 You will need to convert the video into a `.wmv` format, either by using `ffmpeg` or some obscure online converter. Just make sure to keep the same filename, or else, the script will immediately cause a BSoD.
 
+## The Ducky script
+Thanks to [@FalsePhilosopher](https://github.com/FalsePhilosopher), the project has a Ducky script now. Check it out [here](https://raw.githubusercontent.com/FalsePhilosopher/BadUSB-Playground/main/Ducky/USBRubberducky/library/prank/Win/BSOD/Mario-Head/quack.txt)!
