@@ -63,7 +63,7 @@ ULONG TriggerBSOD() {
 	ULONG response;
 
 	RtlAdjustPrivilege(19, TRUE, FALSE, &state); // adjust privileges to allow raising BSoD
-	NtRaiseHardError(STATUS_IN_PAGE_ERROR, 0, 0, NULL, 6, &response); // raise BSoD
+	NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response); // raise BSoD
 
 	return response;
 }
