@@ -1,6 +1,5 @@
 #include <windows.h>
 #include <dshow.h>
-#include <stdio.h>
 
 // externs for bsod stuff
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
