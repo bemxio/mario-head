@@ -1,39 +1,34 @@
 # mario-head
 A little malware script to display a video of Mario's levitating head, asking if he can have your computer, and crashing your PC with a Blue Screen of Death.
 
-Mostly made with DirectShow and some other libraries.
+Made using standard Windows libraries, primarily DirectShow.
 
-## Compiling
+## Building
+First off, you need some dependencies installed:
+- [MinGW](https://en.wikipedia.org/wiki/MinGW)
+    - On Windows, it's recommended to use [MSYS2](https://www.msys2.org/). 
+    - After installing MSYS2 (or if you are on an Arch-based Linux distro), run `pacman -S mingw-w64-gcc` in the MSYS2 terminal to  
+      install MinGW.
+    - On other Linux distributions, search for `mingw-w64` in your package manager.
+- [Git](https://git-scm.com/)
+    - It's optional, since you can download the source code as a ZIP file, but it's recommended to have it installed. It will make
+      pulling the latest source code easier.
 
-### With `cl`
-Make sure to run it from the "x86/x64 Native Tools Command Prompt", so that you can use `cl`.
+Then, clone the repository using `git clone https://github.com/bemxio/mario-head` or download the ZIP file and extract it.
 
-You probably should just use the provided `compile.bat` Batch script, but you can also do it manually, by simply doing:
+Before building, check the [`Makefile`](Makefile) and make sure the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables are set correctly to your environment. If you are using MSYS2 or Arch Linux, you can leave them as is. If you are using another Linux distribution, you may need to change them respectively.
+
+Finally, run `make` (or `mingw-w64-i686-make`) in the root directory of the repository to build the executable.
+
+## The Video
+The default [`assets/video.wmv`](assets/video.wmv) comes from [Mario Teaches Typing 2](https://www.mariowiki.com/Mario_Teaches_Typing_2). It's a clip of one of Mario's quotes that is played on the level select screen. The exact source is extracted from [the playthrough by NintendoComplete](https://youtu.be/PjyChE4NFXk?t=1370), at 22:50.
+
+If you want to use a different video, you can replace the `assets/video.wmv` file with your own. Just make sure it's a Windows Media Video file, and that it's named `video.wmv`. To convert a video to WMV, you can use [FFmpeg](https://ffmpeg.org/), for example:
 ```sh
-cl main.cpp /Fe:"mario.exe"
+ffmpeg -i input.mp4 -b 512k output.wmv
 ```
 
-The script already has pragmas with needed libraries set up, so in case of `cl`, you don't need to add anything else to the command line arguments.
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### With `g++`
-I am not sure if there's a way to do it with `g++`. It's better to just download VS Build Tools & roll in with that.
-
-## Distributing
-You can pack the video file and the main script together using `iexpress`, with the provided SED file, containing all of the settings:
-```sh
-iexpress /Q /N iexpress.sed
-```
-
-or, if you have a 64-bit system and want to package it into a 32-bit executable:
-```sh
-%SYSTEMROOT%\SysWOW64\iexpress.exe /Q /N iexpress.sed
-```
-
-## The video
-The original video comes from [Mario Teaches Typing 2](https://www.mariowiki.com/Mario_Teaches_Typing_2), the exact source is from ["Mario Head Collection"](https://www.youtube.com/watch?v=9tQWLg4E90M&t=30s) on Youtube.
-
-If you want to replace the video, feel free to swap out `mario.wmv` with an another video.
-You will need to convert the video into a `.wmv` format, either by using `ffmpeg` or some obscure online converter. Just make sure to keep the same filename, or else, the script will immediately cause a BSoD.
-
-## The Ducky script
-Thanks to [@FalsePhilosopher](https://github.com/FalsePhilosopher), the project has a Ducky script now. Check it out [here](https://raw.githubusercontent.com/FalsePhilosopher/BadUSB-Playground/main/Ducky/USBRubberducky/library/prank/Win/BSOD/Mario-Head/quack.txt)!
+Contributions are welcome, really welcome, in fact! If you want to contribute, whether it's just a simple question or a whole pull request, feel free to do so.
