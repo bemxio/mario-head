@@ -14,11 +14,14 @@ IVideoWindow*	window = 0;		// the video window
 // helper functions
 void GetVideoResource(LPWSTR* path) {
 	// get the video resource data
-	HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(1), RT_RCDATA);
+	HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
 	HGLOBAL handle = LoadResource(NULL, resource);
 
 	DWORD size = SizeofResource(NULL, resource);
 	LPVOID data = LockResource(handle);
+
+	// close the resource handle
+	CloseHandle(handle);
 
 	// get the temporary path and append the video name
 	GetTempPathW(MAX_PATH, *path);	
@@ -29,10 +32,7 @@ void GetVideoResource(LPWSTR* path) {
 
 	// write the video data to the temporary path
 	WriteFile(file, data, size, NULL, NULL);
-
-	// close haandles
 	CloseHandle(file);
-	CloseHandle(handle);
 
 	// free the resource
 	FreeResource(resource);
