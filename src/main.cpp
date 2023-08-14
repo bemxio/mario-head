@@ -27,11 +27,12 @@ void GetVideoResource(LPWSTR* path) {
 	GetTempPathW(MAX_PATH, *path);	
 	StringCbCatW(*path, MAX_PATH, L"video.wmv");
 
-	// create the file handle
+	// create the file handle and the variable for number of written bytes
 	HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	DWORD written = 0;
 
 	// write the video data to the temporary path
-	WriteFile(file, data, size, NULL, NULL);
+	WriteFile(file, data, size, &written, NULL);
 	CloseHandle(file);
 
 	// free the resource
@@ -43,7 +44,7 @@ void InitializeDirectShow(LPCWSTR* path) {
 	CoInitialize(NULL);
 
 	// create the filter graph manager
-	HRESULT result = CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
+	CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
 	// get all needed addition interfaces
 	graph->QueryInterface(IID_IMediaControl, (void**)&control);
