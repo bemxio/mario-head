@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <dshow.h>
 
-// externs for bsod stuff
+// externs for BSoD stuff
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULONG Unless2, PULONG_PTR Unless3, ULONG ValidResponseOption, PULONG ResponsePointer);
 
@@ -9,7 +9,7 @@ extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULON
 IGraphBuilder*	graph = 0; 		// filter graph manager
 IMediaControl*	control = 0; 	// media control interface
 IMediaEvent*	event = 0; 		// media event interface
-IVideoWindow*	window = 0;		// the video window
+IVideoWindow*	window = 0;		// video window
 
 // helper functions
 void GetVideoResource(LPWSTR* path) {
