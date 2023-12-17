@@ -70,8 +70,8 @@ ULONG TriggerBSOD() {
 
 // main function
 int main() {
-	LPWSTR path;
-	//WCHAR* path = L"C:\\Users\\Bem\\AppData\\Local\\Temp\\video.wmv";
+	LPWSTR path = new WCHAR[MAX_PATH];
+	//WCHAR* path = L"C:\\Users\\bemxio\\AppData\\Local\\Temp\\video.wmv";
 
 	HRESULT result;
 	LONG code;
