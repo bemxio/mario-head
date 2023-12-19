@@ -1,7 +1,7 @@
 CXX = i686-w64-mingw32-g++
 WINDRES = i686-w64-mingw32-windres
 
-CXXFLAGS = -std=c++11
+CXXFLAGS = -std=c++11 -static
 CXXLIBS = -lntdll -lstrmiids -lole32 -luser32
 
 SRC_DIR = src
