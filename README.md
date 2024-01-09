@@ -7,16 +7,21 @@ Made using standard Windows libraries, primarily DirectShow.
 First off, you need some dependencies installed:
 - [MinGW](https://en.wikipedia.org/wiki/MinGW)
     - On Windows, it's recommended to use [MSYS2](https://www.msys2.org/). 
-    - After installing MSYS2 (or if you are on an Arch-based Linux distro), run `pacman -S mingw-w64-gcc` in the MSYS2 terminal to  
+    - After installing MSYS2 (or if you are on an Arch-based Linux distro), run `pacman -S mingw-w64-gcc` in the terminal to  
       install MinGW.
     - On other Linux distributions, search for `mingw-w64` in your package manager.
 - [Git](https://git-scm.com/)
-    - It's optional, since you can download the source code as a ZIP file, but it's recommended to have it installed. It will make
-      pulling the latest source code easier.
+    - It's optional, since you can download the source code as a ZIP file, but it's recommended to have it installed. It will 
+      make pulling the latest source code easier.
+- `winpthreads` library from Git
+    - This is only needed if you want to extend compatibility to Windows 2000/XP. The reason for that is because the latest 
+      stable release doesn't include a fix for `GetTickCount64` function usage, which is only implemented from Vista onwards.
+    - As for the installation, it depends on your OS:
+        - If you are on MSYS2, run `pacman -S mingw-w64-i686-winpthreads-git` in the terminal to install it.
+        - If you are on an Arch-based Linux distro, you can use the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git/) AUR package, just install it with your favorite AUR helper.
+        - On other Linux distributions, you will need to build it yourself. You can find the source code [here](https://sourceforge.net/p/mingw-w64/mingw-w64).
 
-Then, clone the repository using `git clone https://github.com/bemxio/mario-head` or download the ZIP file and extract it.
-
-Before building, check the [`Makefile`](Makefile) and make sure the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables are set correctly to your environment. If you are using MSYS2 or Arch Linux, you can leave them as is. If you are using another Linux distribution, you may need to change them respectively.
+Before building this project, check the [`Makefile`](Makefile) and make sure the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables are set correctly to your environment. If you are using MSYS2 or Arch Linux, you can leave them as is. If you are using another Linux distribution, you may need to change them respectively.
 
 Finally, run `make` (or `mingw-w64-i686-make`) in the root directory of the repository to build the executable.
 
