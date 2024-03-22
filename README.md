@@ -1,39 +1,36 @@
-# mario-head
-A little malware script to display a video of Mario's levitating head, asking if he can have your computer, and crashing your PC with a Blue Screen of Death.
+# Mario Head
 
-Made using standard Windows libraries, primarily DirectShow.
+Mario-Head is a playful malware script designed to display a video of Mario's levitating head, humorously requesting access to your computer and subsequently crashing it with a Blue Screen of Death. The script is developed primarily using standard Windows libraries, particularly DirectShow.
 
-## Building
-First off, you need some dependencies installed:
-- [MinGW](https://en.wikipedia.org/wiki/MinGW)
-    - On Windows, it's recommended to use [MSYS2](https://www.msys2.org/). 
-    - After installing MSYS2 (or if you are on an Arch-based Linux distro), run `pacman -S mingw-w64-gcc` in the terminal to  
-      install MinGW.
-    - On other Linux distributions, search for `mingw-w64` in your package manager.
-- [Git](https://git-scm.com/)
-    - It's optional, since you can download the source code as a ZIP file, but it's recommended to have it installed. It will 
-      make pulling the latest source code easier.
-- `winpthreads` library from Git
-    - This is only needed if you want to extend compatibility to Windows 2000/XP. The reason for that is because the latest 
-      stable release doesn't include a fix for `GetTickCount64` function usage, which is only implemented from Vista onwards.
-    - As for the installation, it depends on your OS:
-        - If you are on MSYS2, run `pacman -S mingw-w64-i686-winpthreads-git` in the terminal to install it.
-        - If you are on an Arch-based Linux distro, you can use the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git/) AUR package, just install it with your favorite AUR helper.
-        - On other Linux distributions, you will need to build it yourself. You can find the source code [here](https://sourceforge.net/p/mingw-w64/mingw-w64).
+## Building Instructions
 
-Before building this project, check the [`Makefile`](Makefile) and make sure the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables are set correctly to your environment. If you are using MSYS2 or Arch Linux, you can leave them as is. If you are using another Linux distribution, you may need to change them respectively.
+To build Mario-Head, ensure you have the following dependencies installed:
 
-Finally, run `make` (or `mingw-w64-i686-make`) in the root directory of the repository to build the executable.
+- [MinGW](https://en.wikipedia.org/wiki/MinGW): It's recommended to utilize [MSYS2](https://www.msys2.org/) on Windows. After MSYS2 installation (or on Arch-based Linux), execute `pacman -S mingw-w64-gcc` in the terminal to install MinGW. For other Linux distributions, search for `mingw-w64` in your package manager.
 
-## The Video
-The default [`assets/video.wmv`](assets/video.wmv) comes from [Mario Teaches Typing 2](https://www.mariowiki.com/Mario_Teaches_Typing_2). It's a clip of one of Mario's quotes that is played on the level select screen. The exact source is extracted from [the playthrough by NintendoComplete](https://youtu.be/PjyChE4NFXk?t=1370), at 22:50.
+- [Git](https://git-scm.com/): While optional, having Git installed simplifies the process of pulling the latest source code.
 
-If you want to use a different video, you can replace the `assets/video.wmv` file with your own. Just make sure it's a Windows Media Video file, and that it's named `video.wmv`. To convert a video to WMV, you can use [FFmpeg](https://ffmpeg.org/), for example:
+- `winpthreads` library from Git: Only necessary for extending compatibility to Windows 2000/XP. Installation methods vary based on your OS:
+    - For MSYS2, run `pacman -S mingw-w64-i686-winpthreads-git` in the terminal.
+    - On Arch-based Linux, utilize the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git/) AUR package.
+    - Other Linux distributions require manual building, with source code available [here](https://sourceforge.net/p/mingw-w64/mingw-w64).
+
+Before building the project, verify the correctness of the [`Makefile`](Makefile), ensuring the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables match your environment. For MSYS2 or Arch Linux, no changes are necessary. For other Linux distributions, adjust them accordingly.
+
+Finally, execute `make` (or `mingw-w64-i686-make`) in the repository's root directory to build the executable.
+
+## Customizing the Video
+
+The default video, [`assets/video.wmv`](assets/video.wmv), is sourced from [Mario Teaches Typing 2](https://www.mariowiki.com/Mario_Teaches_Typing_2). It features a clip of Mario's dialogue from the level select screen, extracted from [NintendoComplete's playthrough](https://youtu.be/PjyChE4NFXk?t=1370) at 22:50.
+
+To use an alternative video, replace the `assets/video.wmv` file with your own Windows Media Video (WMV) file, ensuring it's named `video.wmv`. For video conversion, tools like [FFmpeg](https://ffmpeg.org/) can be employed:
+
 ```sh
 ffmpeg -i input.mp4 -b 512k output.wmv
 ```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Contributions are welcome, really welcome, in fact! If you want to contribute, whether it's just a simple question or a whole pull request, feel free to do so.
+This project is licensed under the MIT License. Refer to the [LICENSE](LICENSE) file for details.
+
+Contributions, whether questions or pull requests, are highly encouraged and welcomed. Feel free to contribute in any capacity!
