@@ -14,14 +14,14 @@ EXECUTABLE = mario_head.exe
 all: $(BUILD_DIR)/$(EXECUTABLE)
 
 clean:
-    $(RM) -r $(BUILD_DIR)
+	$(RM) -r $(BUILD_DIR)
 
 # rules
 $(BUILD_DIR)/$(EXECUTABLE): $(SRC_DIR)/main.cpp $(BUILD_DIR)/resources.o | $(BUILD_DIR)
-    $(CXX) $(CXXFLAGS) -o $@ $^ $(CXXLIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(CXXLIBS)
 
 $(BUILD_DIR)/resources.o: $(SRC_DIR)/resources.rc $(wildcard $(ASSETS_DIR)/*) | $(BUILD_DIR)
-    $(WINDRES) -i $< -o $@
+	$(WINDRES) -i $< -o $@
 
 $(BUILD_DIR):
-    mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
