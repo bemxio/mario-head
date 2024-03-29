@@ -17,10 +17,10 @@ clean:
 	$(RM) -r $(BUILD_DIR)
 
 # rules
-$(BUILD_DIR)/$(EXECUTABLE): $(SRC_DIR)/main.cpp $(BUILD_DIR)/resources.o $(BUILD_DIR)
+$(BUILD_DIR)/$(EXECUTABLE): $(SRC_DIR)/main.cpp $(BUILD_DIR)/resources.o | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(CXXLIBS)
 
-$(BUILD_DIR)/resources.o: $(SRC_DIR)/resources.rc $(wildcard $(ASSETS_DIR)/*) $(BUILD_DIR)
+$(BUILD_DIR)/resources.o: $(SRC_DIR)/resources.rc $(wildcard $(ASSETS_DIR)/*) | $(BUILD_DIR)
 	$(WINDRES) -i $< -o $@
 
 $(BUILD_DIR):
