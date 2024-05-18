@@ -6,7 +6,7 @@ A playful malware script designed to display a video of Mario's levitating head,
 
 To build the project, ensure you have the following dependencies installed:
 
-- [MinGW](https://en.wikipedia.org/wiki/MinGW) - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2 (or if you're on an Arch-based Linux distro), execute `pacman -S mingw-w64-gcc` in the terminal to install MinGW. For other Linux distributions, search for `mingw-w64` in your package manager.
+- [MinGW](https://en.wikipedia.org/wiki/MinGW) with `make` - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2 (or if you're on an Arch-based Linux distro), execute `pacman -S mingw-w64-gcc mingw-w64-make` in the terminal to install MinGW as well as `make`. For other Linux distributions, search for `mingw-w64` in your package manager or compile the tools yourself.
 
 - [Git](https://git-scm.com/) - while optional, having Git installed simplifies the process of pulling the latest source code.
 
