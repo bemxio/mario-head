@@ -6,9 +6,11 @@ A playful malware script designed to display a video of Mario's levitating head,
 
 To build the project, ensure you have the following dependencies installed:
 
-- [MinGW](https://en.wikipedia.org/wiki/MinGW) with `make` - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2 (or if you're on an Arch-based Linux distro), execute `pacman -S mingw-w64-gcc mingw-w64-make` in the terminal to install MinGW as well as `make`. For other Linux distributions, search for `mingw-w64` in your package manager or compile the tools yourself.
+- [MinGW](https://en.wikipedia.org/wiki/MinGW) - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2 (or if you're on an Arch-based Linux distro), execute `pacman -S mingw-w64-gcc` in the terminal to install MinGW. For other Linux distributions, search for `mingw-w64` in your package manager or compile MinGW yourself.
 
 - [Git](https://git-scm.com/) - while optional, having Git installed simplifies the process of pulling the latest source code.
+
+- `make` - if on MSYS2, run `pacman -S mingw-w64-gcc` to install the MinGW variant, on any other Linux distro install the regular version using your package manager.
 
 - `winpthreads` library from Git - only necessary for extending compatibility to Windows 2000/XP. Installation methods vary based on your OS:
     - For MSYS2, run `pacman -S mingw-w64-i686-winpthreads-git` in the terminal.
@@ -17,7 +19,7 @@ To build the project, ensure you have the following dependencies installed:
 
 Before building the project, verify the correctness of the [`Makefile`](Makefile), ensuring the [`CXX`](Makefile#L1) and [`WINDRES`](Makefile#L2) variables match your environment. For MSYS2 or Arch Linux, no changes are necessary. For other Linux distributions, adjust them accordingly.
 
-Finally, execute `make` (or `mingw-w64-i686-make`) in the repository's root directory to build the executable.
+Finally, execute `make` (or `mingw-w64-i686-make` if on MSYS2) in the repository's root directory to build the executable.
 
 ## Video
 
