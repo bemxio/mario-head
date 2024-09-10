@@ -1,8 +1,11 @@
-CXX = i686-w64-mingw32-g++
-WINDRES = i686-w64-mingw32-windres
+# constants
+PREFIX = i686-w64-mingw32
 
-CXXFLAGS = -std=c++11 -static -O2
+CXX = $(PREFIX)-g++
+CXXFLAGS = -static -O2
 CXXLIBS = -lntdll -lstrmiids -lole32 -luser32
+
+WINDRES = $(PREFIX)-windres
 
 SRC_DIR = src
 ASSETS_DIR = assets
