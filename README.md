@@ -6,8 +6,8 @@ To build the project, ensure you have the following dependencies installed:
 - [MinGW](https://en.wikipedia.org/wiki/MinGW) - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2, or if you're on an Arch-based Linux distribution, run `pacman -S mingw-w64-i686-gcc` in the terminal to install MinGW. For other Linux distros, search for `mingw-w64` in your package manager or compile MinGW yourself.
 - [Git](https://git-scm.com/) - while optional, having Git installed simplifies the process of pulling the latest source code.
 - `make` - if on MSYS2, run `pacman -S mingw-w64-i686-make` to install the MinGW variant, otherwise install the regular version using your package manager.
-- `winpthreads` library from Git - only necessary for extending compatibility to Windows 2000/XP. Installation methods vary based on your OS:
-    - For MSYS2, run `pacman -S mingw-w64-i686-winpthreads-git` in the terminal.
+- `winpthreads` from Git - only necessary for extending compatibility to Windows 2000/XP. Installation methods vary based on your OS:
+    - For MSYS2, run `pacman -S mingw-w64-winpthreads-git` in the terminal.
     - On an Arch-based distro, you can use the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git/) AUR package.
     - Other Linux distributions require manual building, with source code available [here](https://sourceforge.net/p/mingw-w64/mingw-w64).
 
