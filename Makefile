@@ -2,7 +2,7 @@
 PREFIX = i686-w64-mingw32
 
 CXX = $(PREFIX)-g++
-CXXFLAGS = -static -O2
+CXXFLAGS = -std=c++98 -static -O2
 CXXLIBS = -lntdll -lstrmiids -lole32 -luser32
 
 WINDRES = $(PREFIX)-windres
