@@ -1,14 +1,16 @@
 # Mario Head
-A playful malware script designed to display a video of Mario's levitating head, humorously requesting access to your computer and subsequently crashing it with a Blue Screen of Death. The script is developed primarily using standard Windows libraries, particularly DirectShow.
+A playful malware script designed to display a video of Mario's levitating head, humorously requesting access to your computer and subsequently crashing it with a [Blue Screen of Death](https://en.wikipedia.org/wiki/Blue_screen_of_death). Developed by using standard Windows libraries, mainly [DirectShow](https://en.wikipedia.org/wiki/DirectShow).
 
 ## Building
 To build the project, ensure you have the following dependencies installed:
-- [MinGW](https://en.wikipedia.org/wiki/MinGW) - it's recommended to use [MSYS2](https://www.msys2.org/) on Windows. After installing MSYS2, or if you're on an Arch-based Linux distribution, run `pacman -S mingw-w64-i686-gcc` in the terminal to install MinGW. For other Linux distros, search for `mingw-w64` in your package manager or compile MinGW yourself.
-- [Git](https://git-scm.com/) - while optional, having Git installed simplifies the process of pulling the latest source code.
-- `make` - if on MSYS2, run `pacman -S mingw-w64-i686-make` to install the MinGW variant, otherwise install the regular version using your package manager.
-- `winpthreads` from Git - only necessary for extending compatibility to Windows 2000/XP. Installation methods vary based on your OS:
-    - For MSYS2, run `pacman -S mingw-w64-winpthreads-git` in the terminal.
-    - On an Arch-based distro, you can use the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git/) AUR package.
+- [MinGW](https://en.wikipedia.org/wiki/MinGW) with MSVCRT - on versions 12 and above, MinGW uses UCRT as the default C runtime, which causes compatibility issues with systems older than Windows 10.
+    - If you're on Windows, it's recommended to use [MSYS2](https://www.msys2.org/). Simply run the installer, open the MSYS2 terminal, and execute `pacman -S mingw-w64-i686-toolchain` to install everything you need.
+    - If you're on an Arch-based Linux distribution, install the [`mingw-w64-gcc`](https://archlinux.org/packages/extra/x86_64/mingw-w64-gcc) package, then build and install the [`mingw-w64-crt-msvcrt`](https://aur.archlinux.org/packages/mingw-w64-crt-msvcrt) and [`mingw-w64-headers-msvcrt`](https://aur.archlinux.org/packages/mingw-w64-headers-msvcrt) packages from the AUR.
+    - For other Linux distros, follow the instructions on the [MinGW-w64 wiki](https://www.mingw-w64.org/downloads) or compile it from source. Make sure to install the MSVCRT variant, in case you want to run the executable on Windows 8.1 or earlier.
+- [Make](https://en.wikipedia.org/wiki/Make_(software)) - included inside the MinGW toolchain package group on MSYS2; on other Linux distributions, you can install it via your package manager.
+- `winpthreads` from Git - only necessary for extending compatibility to Windows XP.
+    - On MSYS2, it is also included inside the MinGW toolchain, so no additional steps are needed.
+    - On an Arch-based distro, you can use the [`mingw-w64-winpthreads-git`](https://aur.archlinux.org/packages/mingw-w64-winpthreads-git) AUR package.
     - Other Linux distributions require manual building, with source code available [here](https://sourceforge.net/p/mingw-w64/mingw-w64).
 
 Before building the project, make sure the [`PREFIX`](Makefile#L2), [`CXX`](Makefile#L4) and [`WINDRES`](Makefile#L8) variables match your environment. For MSYS2 or Arch Linux, no changes are necessary. For other Linux distributions, adjust them accordingly.
