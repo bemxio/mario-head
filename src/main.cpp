@@ -87,8 +87,8 @@ int main() {
     HRESULT result;
 	LONG eventCode;
 
-    // hide console window
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
+    // disable keyboard and mouse input
+    BlockInput(TRUE);
 
     // get video resource
     if (GetVideoResource(&path) == 1) {
