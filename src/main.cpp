@@ -2,7 +2,7 @@
 #include <windows.h>
 
 // constants
-#define BSOD_ERROR_CODE 0xdeadbeef
+#define BSOD_ERROR_CODE 0xdead2bad // :-)
 #define VIDEO_RESOURCE_ID 2
 
 // externs for BSoD functions
