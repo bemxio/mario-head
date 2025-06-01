@@ -3,6 +3,7 @@
 
 // constants
 #define BSOD_ERROR_CODE 0xdead2bad // :-)
+#define VIDEO_FILE_NAME L"mario.wmv"
 #define VIDEO_RESOURCE_ID 2
 
 // externs for BSoD functions
@@ -41,7 +42,7 @@ int GetVideoResource(LPWSTR* path) {
     *path = new WCHAR[MAX_PATH];
 
     GetTempPathW(MAX_PATH, *path);
-    StringCbCatW(*path, MAX_PATH, L"mario.wmv");
+    StringCbCatW(*path, MAX_PATH, VIDEO_FILE_NAME);
 
     // create temporary file and write resource data to it
     HANDLE file = CreateFileW(*path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
